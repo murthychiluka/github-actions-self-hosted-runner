@@ -109,3 +109,31 @@ output "runner_public_ip" {
 output "app_private_ip" {
   value = aws_instance.app_server.private_ip
 }
+
+
+resource "aws_eip" "nat" {
+  domain = "vpc"
+}
+
+resource "aws_nat_gateway" "this" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = data.aws_subnets.public.ids[0]   # NAT must sit in a PUBLIC subnet
+
+  tags = { Name = "app-nat-gateway" }
+}
+
+resource "aws_route_table" "private" {
+  vpc_id = data.aws_vpc.default.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.this.id
+  }
+
+  tags = { Name = "private-rt" }
+}
+
+resource "aws_route_table_association" "app_server" {
+  subnet_id      = aws_instance.app_server.subnet_id
+  route_table_id = aws_route_table.private.id
+}
