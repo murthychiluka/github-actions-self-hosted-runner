@@ -14,7 +14,7 @@ jobs:
 
       - name: Deploy and restart
         run: |
-          timeout 60 ssh -i ~/.ssh/aadvik.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.APP_PRIVATE_IP }} << 'EOF'
+          timeout 60 ssh -i ~/.ssh/india-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.APP_PRIVATE_IP }} << 'EOF'
             cd /home/ec2-user/app
             sudo dnf install -y python3-pip -q
             pip3 install -r requirements.txt --break-system-packages -q
