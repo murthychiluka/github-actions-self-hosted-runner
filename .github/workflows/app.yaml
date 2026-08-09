@@ -12,9 +12,21 @@ jobs:
         run: |
           scp -i ~/.ssh/india-key.pem -o StrictHostKeyChecking=no -r ./app ec2-user@${{ secrets.APP_PRIVATE_IP }}:/home/ec2-user/
 
+    #   - name: Deploy and restart
+    #     run: |
+    #       timeout 60 ssh -i ~/.ssh/india-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.APP_PRIVATE_IP }} << 'EOF'
+    #         cd /home/ec2-user/app
+    #         sudo dnf install -y python3-pip -q
+    #         pip3 install -r requirements.txt --break-system-packages -q
+    #         sudo pkill -f app.py || true
+    #         sleep 1
+    #         setsid nohup python3 app.py > /home/ec2-user/app.log 2>&1 < /dev/null &
+    #         exit 0
+    #       EOF
       - name: Deploy and restart
         run: |
-          timeout 60 ssh -i ~/.ssh/india-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.APP_PRIVATE_IP }} << 'EOF'
+          timeout 120 ssh -i ~/.ssh/india-key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.APP_PRIVATE_IP }} << 'EOF'
+            set -x
             cd /home/ec2-user/app
             sudo dnf install -y python3-pip -q
             pip3 install -r requirements.txt --break-system-packages -q
